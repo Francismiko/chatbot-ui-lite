@@ -1,30 +1,15 @@
-import { Message } from "@/types";
-import { OpenAIStream } from "@/utils";
-
-export const config = {
-  runtime: "edge"
-};
+import { ChatOpenAI } from "@langchain/openai";
+import { StringOutputParser } from "@langchain/core/output_parsers";
 
 const handler = async (req: Request): Promise<Response> => {
   try {
-    const { messages } = (await req.json()) as {
-      messages: Message[];
-    };
+    const { message } = await req.json();
 
-    const charLimit = 12000;
-    let charCount = 0;
-    let messagesToSend = [];
+    const parser = new StringOutputParser();
 
-    for (let i = 0; i < messages.length; i++) {
-      const message = messages[i];
-      if (charCount + message.content.length > charLimit) {
-        break;
-      }
-      charCount += message.content.length;
-      messagesToSend.push(message);
-    }
+    const model = new ChatOpenAI({ temperature: 0, openAIApiKey: process.env.OPENAI_API_KEY });
 
-    const stream = await OpenAIStream(messagesToSend);
+    const stream = await model.pipe(parser).stream(message.content);
 
     return new Response(stream);
   } catch (error) {
