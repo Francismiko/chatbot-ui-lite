@@ -115,8 +115,8 @@ export default function Home() {
     const model = new ChatOpenAI({ temperature: 0, openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY });
 
     const extractResult = await model.pipe(parser).invoke([
-      new SystemMessage(`你需要将用户输入的界面需求做一下提取, 如一个报名表界面, 至少应该包含一个表格, 一个图片, 一个按钮, 以及一个信息填写表单
-      最终输出成这样的格式: '生成一个xx界面, 包含一个xx, 一个xx, 一个xx, 以及一个xx'`),
+      new SystemMessage(`你需要将用户输入的界面需求做一下联想提取,
+      最终输出成这样的格式: '生成一个xx界面, 包含xx, xx, 以及xx'`),
       new HumanMessage(message.content),
     ]);
 
